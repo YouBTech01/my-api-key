@@ -1,10 +1,22 @@
 FROM node:18-slim
 
-# Install required packages
-RUN apt-get update && apt-get install -y \
+# Install required packages with proper repository setup
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     wget \
     unzip \
-    openjdk-11-jdk \
+    gnupg \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add AdoptOpenJDK repository
+RUN wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add - && \
+    echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
+
+# Install OpenJDK 11
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    temurin-11-jdk \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Android SDK
@@ -17,6 +29,7 @@ RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools && \
 
 # Set environment variables
 ENV PATH=${PATH}:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools
+ENV JAVA_HOME=/usr/lib/jvm/temurin-11-jdk-amd64
 
 # Accept licenses and install required SDK packages
 RUN yes | sdkmanager --licenses && \
