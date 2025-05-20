@@ -6,9 +6,13 @@ const { v4: uuidv4 } = require('uuid');
 const { exec } = require('child_process');
 const archiver = require('archiver');
 const extract = require('extract-zip');
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Enable CORS
+app.use(cors());
 
 // Add health check endpoint
 app.get('/', (req, res) => {
