@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: android-webview-generator
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000 
